@@ -16,8 +16,7 @@ import {NFT} from "./NFT.sol";
 ///      4. This contract verifies the signature and the event state, then mints through NFT.
 ///      Codes and supply caps live in the backend; the chain enforces one claim per wallet per event.
 contract Drop is EIP712, Ownable {
-    bytes32 private constant CLAIM_TYPEHASH =
-        keccak256("Claim(uint256 eventId,address claimer,uint256 deadline)");
+    bytes32 private constant CLAIM_TYPEHASH = keccak256("Claim(uint256 eventId,address claimer,uint256 deadline)");
 
     EventRegistry public immutable registry;
     NFT public immutable nft;
@@ -35,10 +34,7 @@ contract Drop is EIP712, Ownable {
     error EventNotStarted();
     error InvalidSignature();
 
-    constructor(EventRegistry _registry, NFT _nft, address _signer)
-        EIP712("Kairo Drop", "1")
-        Ownable(msg.sender)
-    {
+    constructor(EventRegistry _registry, NFT _nft, address _signer) EIP712("Kairo Drop", "1") Ownable(msg.sender) {
         if (_signer == address(0)) revert ZeroAddress();
         registry = _registry;
         nft = _nft;
@@ -66,9 +62,7 @@ contract Drop is EIP712, Ownable {
         if (block.timestamp < info.startTime) revert EventNotStarted();
 
         // The signed data binds the voucher to one event, one wallet and one deadline
-        bytes32 digest = _hashTypedDataV4(
-            keccak256(abi.encode(CLAIM_TYPEHASH, eventId, claimer, deadline))
-        );
+        bytes32 digest = _hashTypedDataV4(keccak256(abi.encode(CLAIM_TYPEHASH, eventId, claimer, deadline)));
         (address recovered, ECDSA.RecoverError err,) = ECDSA.tryRecover(digest, signature);
         if (err != ECDSA.RecoverError.NoError || recovered != signer) revert InvalidSignature();
 

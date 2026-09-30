@@ -154,7 +154,8 @@ contract DropTest is Test {
     }
 
     function test_claim_revertsBeforeEventStarts() public {
-        uint256 future = registry.createEvent("Later", "ipfs://later", block.timestamp + 1 days, block.timestamp + 2 days);
+        uint256 future =
+            registry.createEvent("Later", "ipfs://later", block.timestamp + 1 days, block.timestamp + 2 days);
         vm.expectRevert(Drop.EventNotStarted.selector);
         drop.claim(future, alice, deadline, _sign(signerKey, future, alice, deadline));
     }
